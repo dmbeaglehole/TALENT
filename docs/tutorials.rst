@@ -2,97 +2,117 @@
 How to Use TALENT
 ====================================
 
-This guide will walk you through how to set up and use the TALENT toolbox for benchmarking models on tabular data, running experiments, and adding new methods.
+This guide will walk you through how to install, set up and use the TALENT toolbox for benchmarking models on tabular data, running experiments, and adding new methods.
 
 ==========================
-1. Cloning the Repository
+
+Installation
 ==========================
 
-To get started, clone the TALENT repository from GitHub:
+You can install TALENT directly from GitHub:
 
 .. code-block:: bash
 
-   git clone https://github.com/qile2000/LAMDA-TALENT
+pip install git+https://github.com/LAMDA-Tabular/TALENT.git@main --upgrade
 
+Alternatively, for development purposes you can clone the repository:
 
 .. code-block:: bash
 
-   cd LAMDA-TALENT/LAMDA-TALENT
-
-
-Make sure you have the required dependencies installed. Refer to the `dependencies` section for more details on how to install them.
+git clone https://github.com/LAMDA-Tabular/TALENT
+cd TALENT/test
 
 ==========================
-2. Running Experiments
+2. Quick Start
 ==========================
 
-TALENT supports running experiments for both deep learning methods and classical machine learning models. You can easily configure and run experiments by following these steps:
+Here's a basic example of how to run a deep learning model experiment:
 
-1. **Configure the experiment settings**:
-   
-   - Edit the configuration files located in `configs/default/[MODEL_NAME].json` and `configs/opt_space/[MODEL_NAME].json` to customize global settings and hyperparameters for the model you wish to train.
+.. code-block:: python
 
-2. **Run the experiment**:
-   
-   To run an experiment for deep learning methods, use the following command:
+from tqdm import tqdm
+from TALENT.model.utils import get_deep_args,show_results,tune_hyper_parameters,get_method,set_seeds
+from TALENT.model.lib.data import get_dataset
 
-   .. code-block:: bash
+if __name__ == '__main__':
+    loss_list, results_list, time_list = [], [], []
+    args,default_para,opt_space = get_deep_args()
+    train_val_data,test_data,info = get_dataset(args.dataset,args.dataset_path)
+    if args.tune:
+         args = tune_hyper_parameters(args,opt_space,train_val_data,info)
+    for seed in tqdm(range(args.seed_num)):
+         args.seed = seed # update seed
+         set_seeds(args.seed)
+         method = get_method(args.model_type)(args, info['task_type'] == 'regression')
+         time_cost = method.fit(train_val_data, info)
+         vl, vres, metric_name, predict_logits = method.predict(test_data, info, model_name=args.evaluate_option)
+         loss_list.append(vl)
+         results_list.append(vres)
+         time_list.append(time_cost)
 
-      python train_model_deep.py --model_type [MODEL_NAME]
+   show_results(args,info, metric_name,loss_list,results_list,time_list)
 
-   
-   For classical machine learning methods, use:
 
-   .. code-block:: bash
+Run the script from command line:
 
-      python train_model_classical.py --model_type [MODEL_NAME]
+.. code-block:: bash
 
-   Replace `[MODEL_NAME]` with the name of the model you wish to run (e.g., `MLP`, `ResNet`, `XGBoost`, etc.).
+python train_model_deep.py --model_type MODEL_NAME
 
 ==========================
-3. Adding New Methods
+3. Running Experiments
 ==========================
 
-TALENT is designed to be easily extendable. You can add new models by following these steps:
+TALENT supports running experiments for both deep learning methods and classical machine learning models:
 
+Configure the experiment settings:
 
-1. **Create the model**: 
-   
-   - Add the model class to the `model/models/` directory. You can use one of the existing models as a template.
+Edit the configuration files located in configs/default/[MODEL_NAME].json and configs/opt_space/[MODEL_NAME].json
 
-2. **Override the base class**:
+Run the experiment:
 
-   - Inherit from the base class located at `model/methods/base.py`, and override the `construct_model()` method in the new class to define the architecture of your model.
+For deep learning methods:
 
-3. **Register the method**:
+.. code-block:: bash
 
-   - Add the method name to the `get_method` function in `model/utils.py`.
+python train_model_deep.py --model_type [MODEL_NAME]
 
-4. **Update configuration files**:
+For classical machine learning methods:
 
-   - Add the parameter settings for your new method in `configs/default/[MODEL_NAME].json` and `configs/opt_space/[MODEL_NAME].json`.
+.. code-block:: bash
 
+python train_model_classical.py --model_type [MODEL_NAME]
+
+==========================
+4. Adding New Methods
+==========================
+
+For methods that only need model design:
+
+Add the model class to model/models/
+
+Inherit from model/methods/base.py and override construct_model()
+
+Add the method name in get_method function in model/utils.py
+
+Add parameter settings in configs/default/[MODEL_NAME].json and configs/opt_space/[MODEL_NAME].json
+
+For methods requiring training process changes, partially override functions based on model/methods/base.py. Refer to existing implementations in model/methods/.
 
 ===============================
-4. Configuring Hyperparameters
+5. Configuring Hyperparameters
 ===============================
 
-TALENT allows you to fine-tune models through configuration files. These files are located in the `configs/default/` and `configs/opt_space/` directories.
+Hyperparameters can be configured through:
 
-- **`configs/default/`**: Contains global settings and default parameters for each method.
-- **`configs/opt_space/`**: Defines the hyperparameter optimization space for each method.
+configs/default/: Default parameters for each method
 
-To modify the hyperparameters:
+configs/opt_space/: Hyperparameter optimization space
 
-1. Open the appropriate `.json` configuration file.
-2. Edit the values for parameters such as learning rate, batch size, number of layers, etc.
-3. Save the changes and run the experiment again using the `train_model_deep.py` or `train_model_classical.py` script.
-
-
-You can customize the logging behavior by modifying the configuration files.
+Modify the appropriate .json files to adjust parameters like learning rate, batch size, etc.
 
 ==========================
-5. Troubleshooting
+6. Troubleshooting
 ==========================
 
 If you encounter any issues while using TALENT, try the following steps:
