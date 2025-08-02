@@ -70,6 +70,7 @@ Welcome to **TALENT**, a benchmark with a comprehensive machine learning toolbox
 
 
 
+
 ## 📰 What's New
 
 - [2025-06]🌟 Add [TabAutoPNPNet](https://www.mdpi.com/2079-9292/14/6/1165) (Electronics 2025)
@@ -135,6 +136,8 @@ TALENT integrates an extensive array of 30+ deep learning architectures for tabu
 35. **[TabAutoPNPNet](https://www.mdpi.com/2079-9292/14/6/1165)**: A tabular model based on periodicity, particularly the Fourier transform and Chebyshev polynomials, with performance on par with or superior to FT-Transformer. 
 
 
+🔧 If you want to check the **default hyperparameters and hyperparameter search spaces** of all methods, please visit:  
+👉 [https://6sy666.github.io/TALENT-Configs/](https://6sy666.github.io/TALENT-Configs/)
 
 ## ☄️ How to Use TALENT
 
