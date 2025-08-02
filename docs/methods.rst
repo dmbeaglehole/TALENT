@@ -40,6 +40,11 @@ TALENT offers the following deep learning models, specifically designed to enhan
 28. `GRANDE <https://arxiv.org/abs/2309.17130>`_ : A tree-mimic model using gradient descent for axis-aligned decision trees.
 29. `AMFormer <https://arxiv.org/abs/2402.02334>`_ : A transformer-based method for tabular data, with attention mechanisms based on feature interactions.
 30. `Trompt <https://arxiv.org/abs/2305.18446>`_ : A prompt-based neural network for separating intrinsic column features and sample-specific feature importance.
+31. **`TabM <https://arxiv.org/abs/2410.24210>`_** :  A model based on MLP and variations of BatchEnsemble.  
+32. **`TabPFN v2 <https://doi.org/10.1038/s41586-024-08328-6>`_**: A general model which involves the use of pre-trained deep neural networks that can be directly applied to any tabular task.  
+33. **`T2Gformer <https://arxiv.org/abs/2211.16887>`_**: A Transformer network for tabular learning that processes data guided by relation graphs and uses a Cross-level Readout for global semantics in prediction.  
+34. **`TabICL <https://arxiv.org/abs/2502.05564>`_**: A comparable tabular foundation model with performance on par with TabPFN v2.  
+35. **`TabAutoPNPNet <https://www.mdpi.com/2079-9292/14/6/1165>`_**: A tabular model based on periodicity, particularly the Fourier transform and Chebyshev polynomials, with performance on par with or superior to FT-Transformer.  
 
 ==========================
 Classical Methods
