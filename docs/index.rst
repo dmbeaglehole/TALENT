@@ -64,6 +64,13 @@ Here are the recent updates to **TALENT**:
 - [2024-06]🌟 Check out our new baseline `ModernNCA <https://arxiv.org/abs/2407.03257>`_, inspired by traditional **Neighbor Component Analysis**, which outperforms both tree-based and other deep tabular models, while also reducing training time and model size!
 - [2024-06]🌟 Check out our `benchmark paper <https://arxiv.org/abs/2407.00956>`_ about tabular data, which provides comprehensive evaluations of classical and deep tabular methods based on our toolbox in a fair manner!
 
+.. note::
+   If you want to view **benchmark results**, please visit:
+   `https://6sy666.github.io/TALENT-Results/ <https://6sy666.github.io/TALENT-Results/>`_
+
+   To explore **default hyperparameters and search spaces** of methods in this toolbox, check:
+   `https://6sy666.github.io/TALENT-Configs/ <https://6sy666.github.io/TALENT-Configs/>`_
+
 ==========================
 Contents
 ==========================
