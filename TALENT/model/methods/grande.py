@@ -258,8 +258,6 @@ class GRANDEMethod(Method):
 
         if self.is_binclass:
             test_logit = np.stack([-test_logit.cpu().squeeze(), test_logit.cpu().squeeze()], axis=-1)
-        # elif self.is_regression:
-        #     test_logit = test_logit * self.model.std + self.model.mean
             
         vres, metric_name = self.metric(test_logit, test_label, self.y_info)
 

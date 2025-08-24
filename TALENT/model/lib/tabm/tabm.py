@@ -17,8 +17,8 @@ def _init_scaling_by_sections(
     Typically, one section corresponds to one feature.
     """
     assert weight.ndim == 2
-    print(weight.shape)
-    print(init_sections)
+    # print(weight.shape)
+    # print(init_sections)
     assert weight.shape[1] == sum(init_sections)
 
     if distribution == 'normal':
