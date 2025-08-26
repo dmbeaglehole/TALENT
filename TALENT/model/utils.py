@@ -370,7 +370,7 @@ def get_deep_args():
                                  'dnnr', 'switchtab', 'grownet', 'tabr', 'modernNCA',
                                  'hyperfast', 'bishop', 'realmlp', 'protogate', 'mlp_plr',
                                  'excelformer', 'grande', 'amformer', 'tabptm', 'trompt', 'tabm',
-                                 'PFN-v2', 't2gformer', 'tabautopnpnet','tabicl'
+                                 'PFN-v2', 't2gformer', 'tabautopnpnet', 'tabicl', 'mitra'
                                  ])
 
     # optimization parameters
@@ -879,5 +879,8 @@ def get_method(model):
     elif model == 'tabautopnpnet':
         from TALENT.model.methods.tabautopnpnet import TabAutoPNPNetMethod
         return TabAutoPNPNetMethod
+    elif model == 'mitra':
+        from TALENT.model.methods.mitra import MitraMethod
+        return MitraMethod
     else:
         raise NotImplementedError("Model \"" + model + "\" not yet implemented")
