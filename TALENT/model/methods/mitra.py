@@ -27,7 +27,8 @@ class MitraMethod(Method):
             self.N, self.C, self.num_new_value, self.imputer, self.cat_new_value = data_nan_process(self.N, self.C, self.args.num_nan_policy, self.args.cat_nan_policy)
             self.y, self.y_info, self.label_encoder = data_label_process(self.y, self.is_regression)
             self.N, self.C, self.ord_encoder, self.mode_values, self.cat_encoder = data_enc_process(self.N, self.C, self.args.cat_policy)
-            self.criterion = F.cross_entropy if  not self.is_regression else F.mse_loss
+            self.criterion = F.cross_entropy if not self.is_regression else F.mse_loss
+            self.n_classes = self.y_info['n_classes'] if not self.is_regression else None
         else:
             N_test, C_test, _, _, _ = data_nan_process(N, C, self.args.num_nan_policy, self.args.cat_nan_policy, self.num_new_value, self.imputer, self.cat_new_value)
             N_test, C_test, _, _, _ = data_enc_process(N_test, C_test, self.args.cat_policy, None, self.ord_encoder, self.mode_values, self.cat_encoder)
@@ -69,10 +70,8 @@ class MitraMethod(Method):
         else:
             x_support = self.N['train']
 
-        # print(f'[DEBUG] {type(x_support)} {x_support.shape}, {x_support.dtype}, {type(y_support)} {y_support.shape}, {y_support.dtype}')
-
-        self.x_support = torch.from_numpy(x_support).float().unsqueeze(0).to(self.args.device)  # [1, n_support, n_feat]
-        self.y_support = torch.from_numpy(y_support).float().unsqueeze(0).to(self.args.device)  # [1, n_support]
+        self.x_support = torch.from_numpy(x_support).float().to(self.args.device)  # [n_support, n_feat]
+        self.y_support = torch.from_numpy(y_support).float().to(self.args.device)  # [n_support]
 
         self.construct_model()
         
@@ -91,28 +90,55 @@ class MitraMethod(Method):
         else:
             Test_X = self.N_test
 
-        x_query = torch.from_numpy(Test_X).float().unsqueeze(0).to(self.args.device)  # [1, n_query, n_feat]
+        x_query = torch.from_numpy(Test_X).float().to(self.args.device)  # [n_query, n_feat]
 
-        batch_size = self.x_support.shape[0]
-        n_obs_support = self.x_support.shape[1]
-        n_obs_query = x_query.shape[1]
-        n_feat = self.x_support.shape[2]
+        n_obs_support = self.x_support.shape[0]
+        n_obs_query = x_query.shape[0]
+        n_feat = self.x_support.shape[1]
         
+        max_samples_support = self.args.config['general']['max_samples_support']
+        max_samples_query = self.args.config['general']['max_samples_query']
+
+        if n_obs_support > max_samples_support:
+            idx = torch.randperm(n_obs_support)[:max_samples_support] 
+            self.x_support = self.x_support[idx, :]
+            self.y_support = self.y_support[idx]
+            n_obs_support = max_samples_support
+        
+        results = []
         self.model.eval()
         with torch.no_grad():
-            test_logit = self.model(
-                x_support = self.x_support, 
-                y_support = self.y_support, 
-                x_query = x_query,
-                padding_features = torch.zeros((batch_size, n_feat), dtype=torch.bool, device=self.args.device),            # for missing value
-                padding_obs_support = torch.zeros((batch_size, n_obs_support), dtype=torch.bool, device=self.args.device),  # for support set padding
-                padding_obs_query__ = torch.zeros((batch_size, n_obs_query), dtype=torch.bool, device=self.args.device),    # for query set padding
-            ) # [1, n_query, n_class]
-        test_logit = test_logit.squeeze(0).cpu()
+            for start in range(0, n_obs_query, max_samples_query):
+                end = min(start + max_samples_query, n_obs_query)
+                x_query_batch = x_query[start:end]   # [batch_query, n_feat]
+                batch_size = 1
+                batch_n_query = x_query_batch.shape[0]
+
+                x_support_batch = self.x_support.unsqueeze(0)  # [1, n_obs_support, n_feat]
+                y_support_batch = self.y_support.unsqueeze(0)  # [1, n_obs_support]
+                x_query_batch = x_query_batch.unsqueeze(0)     # [1, batch_n_query, n_feat]
+
+                # no padding
+                padding_features = torch.zeros((batch_size, n_feat), dtype=torch.bool, device=self.args.device)
+                padding_obs_support = torch.zeros((batch_size, n_obs_support), dtype=torch.bool, device=self.args.device)
+                padding_obs_query = torch.zeros((batch_size, batch_n_query), dtype=torch.bool, device=self.args.device)
+
+                test_logit = self.model(
+                    x_support = x_support_batch,
+                    y_support = y_support_batch,
+                    x_query = x_query_batch,
+                    padding_features = padding_features,
+                    padding_obs_support = padding_obs_support,
+                    padding_obs_query__ = padding_obs_query,
+                ) # [1, batch_n_query, n_classes]
+
+                results.append(test_logit.squeeze(0))
+
+        test_logit = torch.cat(results, dim=0).cpu()
+        if not self.is_regression:
+            test_logit = test_logit[:, :self.n_classes]
         test_label = self.y_test
-        
-        # print(f'[DEBUG] {test_logit.shape} {test_label.shape}')
-        
+
         test_label_tensor = torch.tensor(test_label, dtype=torch.float32 if self.is_regression else torch.long)
         
         vl = self.criterion(test_logit, test_label_tensor).item()
