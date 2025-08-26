@@ -73,7 +73,8 @@ Welcome to **TALENT**, a benchmark with a comprehensive machine learning toolbox
 
 ## 📰 What's New
 
-- [2025-06]🌟 Add [TabAutoPNPNet](https://www.mdpi.com/2079-9292/14/6/1165) (Electronics 2025)
+- [2025-08]🌟 Add [Mitra](https://www.amazon.science/blog/mitra-mixed-synthetic-priors-for-enhancing-tabular-foundation-models).
+- [2025-06]🌟 Add [TabAutoPNPNet](https://www.mdpi.com/2079-9292/14/6/1165) (Electronics 2025).
 - [2025-06]🌟 Add [TabICL](https://arxiv.org/abs/2502.05564) (ICML 2025). The current code is based on TabICL v0.1.2.
 - [2025-05]🌟 Check out our three papers **[MMTU](https://github.com/LAMDA-Tabular/MMTU)**, **[Tabular-Temporal-Shift](https://github.com/LAMDA-Tabular/Tabular-Temporal-Shift)**, and [**BETA**](https://github.com/LAMDA-Tabular/BETA) accepted at ICML 2025!
 - [2025-04]🌟 Check out our new survey [Representation Learning for Tabular Data: A Comprehensive Survey](https://arxiv.org/abs/2504.16109) ([Repo](https://github.com/LAMDA-Tabular/Tabular-Survey)). We organize existing methods into three main categories according to their generalization capabilities: specialized, transferable, and general models, which provides a comprehensive taxonomy for deep tabular representation methods.🚀🚀🚀
@@ -134,6 +135,7 @@ TALENT integrates an extensive array of 30+ deep learning architectures for tabu
 33. **[T2Gformer](https://arxiv.org/abs/2211.16887)**: A Transformer network for tabular learning that processes data guided by relation graphs and uses a Cross-level Readout for global semantics in prediction.
 34. **[TabICL](https://arxiv.org/abs/2502.05564)**: A comparable tabular foundation model with performance on par with TabPFN v2.
 35. **[TabAutoPNPNet](https://www.mdpi.com/2079-9292/14/6/1165)**: A tabular model based on periodicity, particularly the Fourier transform and Chebyshev polynomials, with performance on par with or superior to FT-Transformer. 
+36. **[Mitra](https://www.amazon.science/blog/mitra-mixed-synthetic-priors-for-enhancing-tabular-foundation-models)**: A tabular foundation model learned with mixed synthetic priors.
 
 
 🔧 If you want to check the **default hyperparameters and hyperparameter search spaces** of all methods, please visit:  
