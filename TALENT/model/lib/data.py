@@ -148,9 +148,9 @@ def data_nan_process(N_data, C_data, num_nan_policy, cat_nan_policy, num_new_val
         num_nan_masks = {k: np.isnan(v) for k, v in N.items()}
         if num_new_value is None:
             if num_nan_policy == 'mean':
-                num_new_value = np.nanmean(N_data['train'], axis=0)
+                num_new_value = np.nanmean(N['train'], axis=0)
             elif num_nan_policy == 'median':
-                num_new_value = np.nanmedian(N_data['train'], axis=0)
+                num_new_value = np.nanmedian(N['train'], axis=0)
             else:
                 raise_unknown('numerical NaN policy', num_nan_policy)
             if np.isnan(num_new_value).any():  # exists feature with all NaN
