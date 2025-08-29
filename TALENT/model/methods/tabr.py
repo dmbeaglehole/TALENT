@@ -47,7 +47,7 @@ class TabRMethod(Method):
             model_config = self.args.config['model']
         self.model = TabR(
             n_num_features = self.n_num_features,
-            n_cat_features = self.C_features,
+            n_cat_features = self.n_cat_features,
             n_classes = self.d_out,
             **model_config
         ).to(self.args.device)
@@ -63,7 +63,6 @@ class TabRMethod(Method):
             self.N, self.C, self.ord_encoder, self.mode_values, self.cat_encoder = data_enc_process(self.N, self.C, self.args.cat_policy)
             self.n_num_features = self.N['train'].shape[1] if self.N is not None else 0
             self.n_cat_features = self.C['train'].shape[1] if self.C is not None else 0
-                    
             
             self.N, self.normalizer = data_norm_process(self.N, self.args.normalization, self.args.seed)
             self.y, self.y_info, self.label_encoder = data_label_process(self.y, self.is_regression)
@@ -71,7 +70,6 @@ class TabRMethod(Method):
                 self.d_out = 1
             else:
                 self.d_out = len(np.unique(self.y['train']))
-            self.C_features = self.C['train'].shape[1] if self.C is not None else 0
             self.N, self.C, self.y, self.train_loader, self.val_loader, self.criterion = data_loader_process(self.is_regression, (self.N, self.C), self.y, self.y_info, self.args.device, self.args.batch_size, is_train = True,is_float=self.args.use_float)
         else:
             N_test, C_test, _, _, _ = data_nan_process(N, C, self.args.num_nan_policy, self.args.cat_nan_policy, self.num_new_value, self.imputer, self.cat_new_value)
