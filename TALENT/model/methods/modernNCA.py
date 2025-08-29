@@ -47,7 +47,7 @@ class ModernNCAMethod(Method):
         if model_config is None:
             model_config = self.args.config['model']
         self.model = ModernNCA(
-            d_in = self.n_num_features + self.C_features,
+            d_in = self.n_num_features + self.n_cat_features,
             d_num = self.n_num_features,
             d_out = self.d_out,
             **model_config
@@ -71,9 +71,8 @@ class ModernNCAMethod(Method):
                 self.d_out = 1
             else:
                 self.d_out = len(np.unique(self.y['train']))
-            self.C_features = self.C['train'].shape[1] if self.C is not None else 0
             self.N, self.C, self.y, self.train_loader, self.val_loader, self.criterion = data_loader_process(self.is_regression, (self.N, self.C), self.y, self.y_info, self.args.device, self.args.batch_size, is_train = True,is_float=self.args.use_float)
-            if  not self.D.is_regression:
+            if not self.D.is_regression:
                 self.criterion=torch.nn.functional.nll_loss
         else:
             N_test, C_test, _, _, _ = data_nan_process(N, C, self.args.num_nan_policy, self.args.cat_nan_policy, self.num_new_value, self.imputer, self.cat_new_value)
